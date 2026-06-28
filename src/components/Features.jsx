@@ -70,7 +70,6 @@ export default function Features() {
     <section id="features" style={{ padding: '100px 24px', background: C.bg, position: 'relative' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         
-        {/* Заголовок секції */}
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
             <span style={{ width: 40, height: 1, background: C.border }} />
@@ -84,7 +83,6 @@ export default function Features() {
           </h2>
         </div>
 
-        {/* Сітка карток */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 24 }}>
           {FEATURES.map((feat) => (
             <div 

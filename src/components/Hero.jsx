@@ -30,7 +30,6 @@ export default function Hero() {
         paddingTop: 100, paddingBottom: 120
       }}>
         
-        {/* ІНФОРМАЦІЙНА БІГУЧА СТРІЧКА */}
         <div className="ticker-container" style={{ top: '65px' }}>
           <div className="ticker-wrapper">
             {[...INFO_TICKER, ...INFO_TICKER].map((item, i) => (
@@ -44,11 +43,9 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* ФОН ТА СІТКА */}
         <div className="grid-bg" style={{ position: 'absolute', inset: 0, opacity: 0.6 }} />
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(250,204,21,0.08) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
 
-        {/* ЛЕТЮЧІ ВІДЖЕТИ (Додано клас hero-floating-widget для приховання на мобільних) */}
         <div className="hero-floating-widget animate-float" style={{
           position: 'absolute', left: '8%', top: '30%', background: 'rgba(24, 24, 27, 0.6)', backdropFilter: 'blur(12px)', border: `1px solid ${C.border}`, padding: '16px 24px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 16, zIndex: 2, boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
         }}>
@@ -71,7 +68,6 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* ГОЛОВНИЙ КОНТЕНТ */}
         <div style={{ position: 'relative', zIndex: 3, textAlign: 'center', padding: '0 20px', width: '100%', maxWidth: 1000, marginTop: '80px' }}>
           
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>

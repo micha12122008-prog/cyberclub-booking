@@ -25,7 +25,6 @@ export default function Reviews() {
     <section id="reviews" style={{ padding: '100px 24px', background: C.surface, borderTop: `1px solid ${C.border}` }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         
-        {/* Заголовок */}
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, color: '#fff', letterSpacing: 2, textTransform: 'uppercase' }}>
             ЩО КАЖУТЬ <span style={{ color: C.yellow }}>ГРАВЦІ</span>
@@ -33,7 +32,6 @@ export default function Reviews() {
           <p style={{ color: C.muted, fontSize: 16, marginTop: 12, letterSpacing: 1 }}>Реальні відгуки нашого ком'юніті</p>
         </div>
 
-        {/* Сітка відгуків */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
           {REVIEWS_DATA.map((rev, index) => (
             <div key={index} style={{
@@ -45,7 +43,6 @@ export default function Reviews() {
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = 'translateY(0)' }}
             >
               <div>
-                {/* Зірочки */}
                 <div style={{ display: 'flex', gap: 4, marginBottom: 24 }}>
                   {[1, 2, 3, 4, 5].map(star => (
                     <svg key={star} width="20" height="20" viewBox="0 0 24 24" fill={C.yellow}>

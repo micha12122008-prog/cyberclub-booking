@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 const C = { yellow: '#facc15', muted: '#a1a1aa', surface: '#18181b', bg: '#09090b', border: '#3f3f46' };
 
-// ОНОВЛЕНО: Переконайся, що morningPrice та nightPrice є у кожній зоні
 const ZONES = [
   { id: 'standard', name: 'СТАНДАРТ', sub: '', price: 100, morningPrice: 250, nightPrice: 400, seats: 20, booked: [2, 5, 8, 12, 15], specs: ['RTX 5060 TI', '144Hz IPS'] },
   { id: 'pro', name: 'PRO', sub: '(CS2 / DOTA 2)', price: 140, morningPrice: 350, nightPrice: 550, seats: 10, booked: [1, 3], specs: ['RTX 5070 TI SUPER', '240Hz Zowie'] },
@@ -21,7 +20,6 @@ export default function BookingMap({ onRequireAuth }) {
   const [hours, setHours] = useState(2);
   const [seat, setSeat] = useState(null);
 
-  // ОНОВЛЕНО: Додано "|| 0", щоб гарантовано поверталось число, навіть якщо щось піде не так
   const calculateTotal = () => {
     if (tariff.id === 'morning') return zone.morningPrice || 0;
     if (tariff.id === 'night') return zone.nightPrice || 0;
@@ -49,8 +47,6 @@ export default function BookingMap({ onRequireAuth }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 48, alignItems: 'start' }}>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
-            
-            {/* Крок 1: Зона */}
             <div>
               <div style={{ color: C.muted, marginBottom: 16, fontSize: 13, fontWeight: 700, letterSpacing: 2 }}>1. ОБЕРІТЬ ЗОНУ</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
@@ -85,7 +81,6 @@ export default function BookingMap({ onRequireAuth }) {
               </div>
             </div>
 
-            {/* Крок 2: Тариф та час */}
             <div>
               <div style={{ color: C.muted, marginBottom: 16, fontSize: 13, fontWeight: 700, letterSpacing: 2 }}>2. ТАРИФ ТА ЧАС</div>
               
@@ -123,7 +118,6 @@ export default function BookingMap({ onRequireAuth }) {
               )}
             </div>
 
-            {/* Крок 3: Місця */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
                 <div style={{ color: C.muted, fontSize: 13, fontWeight: 700, letterSpacing: 2 }}>3. ВІЛЬНІ МІСЦЯ</div>
