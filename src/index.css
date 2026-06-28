@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+
+:root {
+  --color-bg: #09090b;
+  --color-surface: #18181b;
+  --color-yellow: #eab308;
+  --color-border: #3f3f46;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background-color: var(--color-bg);
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-yellow); border-radius: 4px; }
+::selection { background: var(--color-yellow); color: var(--color-bg); }
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(234, 179, 8, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234, 179, 8, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.animate-pulse-yellow { animation: pulseYellow 2.5s ease-in-out infinite; }
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+@keyframes pulseYellow {
+  0%, 100% { box-shadow: 0 0 10px rgba(234, 179, 8, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(234, 179, 8, 0.6), 0 0 40px rgba(234, 179, 8, 0.2); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(9, 9, 11, 0.85);
+  backdrop-filter: blur(5px); z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.input-cyber {
+  background: #111113; border: 1px solid var(--color-border);
+  border-radius: 4px; color: #e2e8f0; font-family: 'Rajdhani', sans-serif;
+  font-size: 15px; font-weight: 600; padding: 12px 16px; width: 100%; outline: none;
+}
+.input-cyber:focus { border-color: var(--color-yellow); box-shadow: 0 0 8px rgba(234, 179, 8, 0.3); }
+
+.ticker-container {
+  width: 100%;
+  overflow: hidden;
+  background: rgba(24, 24, 27, 0.4);
+  border-top: 1px solid rgba(63, 63, 70, 0.3);
+  border-bottom: 1px solid rgba(63, 63, 70, 0.3);
+  padding: 12px 0;
+  position: absolute;
+  top: 70px; /* Знаходиться рівно під навігаційним меню */
+  left: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.ticker-wrapper {
+  display: flex;
+  width: max-content;
+  animation: scrollTicker 35s linear infinite;
+}
+
+/* Зупиняємо стрічку, якщо користувач навів на неї мишку */
+.ticker-wrapper:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
