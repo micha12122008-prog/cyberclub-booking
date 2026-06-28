@@ -1,5 +1,5 @@
 import React from 'react';
-import Reveal from './Reveal'; // Імпортуємо анімацію
+import Reveal from './Reveal';
 
 const C = { yellow: '#facc15', muted: '#a1a1aa', border: '#3f3f46', surface: '#18181b', bg: '#09090b' };
 
@@ -66,7 +66,6 @@ export default function ZoneDetails() {
     <section id="zones" style={{ padding: '100px 24px', background: C.surface, position: 'relative' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         
-        {/* Заголовок секції випливає зверху вниз */}
         <Reveal direction="down">
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, color: '#fff', letterSpacing: 2, textTransform: 'uppercase' }}>
@@ -79,7 +78,6 @@ export default function ZoneDetails() {
         {/* Сітка карток тарифу */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24 }}>
           {ZONES_INFO.map((zone, index) => (
-            /* Обгортка Reveal всередині масиву створює каскадний ефект появи */
             <Reveal key={zone.id} direction="up" delay={index * 150}>
               <div style={{
                 background: C.bg, borderRadius: 12, padding: 32, border: `1px solid ${zone.isPopular ? C.yellow : C.border}`,

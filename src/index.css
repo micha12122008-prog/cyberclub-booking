@@ -9,7 +9,6 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Плавний скрол по всьому сайту */
 html { scroll-behavior: smooth; }
 
 body {
@@ -86,7 +85,6 @@ body {
   100% { transform: translateX(-50%); }
 }
 
-/* --- НОВІ АНІМАЦІЇ ПОЯВИ СТОРІНКИ --- */
 @keyframes pageFadeIn {
   from {
     opacity: 0;

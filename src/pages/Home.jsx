@@ -5,20 +5,20 @@ import ZoneDetails from '../components/ZoneDetails';
 import BookingMap from '../components/BookingMap';
 import Reviews from '../components/Reviews';
 import Footer from '../components/Footer';
-import Reveal from '../components/Reveal'; // Імпортуємо анімацію
+import Reveal from '../components/Reveal';
 
 export default function Home({ onRequireAuth }) {
   return (
     <main className="page-animate">
-      {/* Головний екран залишаємо як є, у нього своя логіка появи */}
+      {/* Головний екран */}
       <Hero />
       
-      {/* Секція "Про нас" плавно випливає знизу */}
+      {/* Секція "Про нас" */}
       <Reveal direction="up" delay={100}>
         <Features />
       </Reveal>
       
-      {/* Ігрові зони (внутрішні картки анімуються окремо всередині компонента) */}
+      {/* Ігрові зони */}
       <ZoneDetails />
       
       {/* Панель бронювання з'являється з легким підйомом */}

@@ -29,7 +29,6 @@ export default function Reveal({ children, delay = 0, direction = 'up' }) {
       opacity: isVisible ? 1 : 0,
       transform: isVisible ? 'translate(0)' : getTransform(),
       transition: `all 0.8s cubic-bezier(0.17, 0.55, 0.55, 1) ${delay}ms`
-      /* Звідси видалено width: '100%', щоб не ламати плашки та Flexbox! */
     }}>
       {children}
     </div>

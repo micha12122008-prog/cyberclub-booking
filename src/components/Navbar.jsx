@@ -26,7 +26,7 @@ export default function Navbar({ onOpenAuth, isAuth, user, onLogout }) {
     { name: 'ЗВ\'ЯЗОК', id: 'footer', path: '/' }
   ];
 
-  // Нова розумна функція навігації
+  // функція навігації
   const handleNavigation = (link) => {
     setMenuOpen(false);
 
@@ -36,7 +36,6 @@ export default function Navbar({ onOpenAuth, isAuth, user, onLogout }) {
       // Якщо ми не на головній, спочатку переходимо туди
       if (location.pathname !== '/') {
         navigate('/');
-        // Даємо React трохи часу відрендерити головну сторінку перед скролом
         setTimeout(() => {
           document.getElementById(link.id)?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
