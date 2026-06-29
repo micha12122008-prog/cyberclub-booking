@@ -8,7 +8,7 @@ const ZONES_INFO = [
     id: 'standard',
     name: 'СТАНДАРТ',
     desc: 'Ідеальний баланс для комфортної гри з друзями на високих налаштуваннях.',
-    price: 'від 70 ₴ / god',
+    price: 'від 100 ₴ / год',
     pc: [
       { label: 'GPU', val: 'GeForce RTX 5060 TI' },
       { label: 'CPU', val: 'Intel Core i5-13400F' },
@@ -25,7 +25,7 @@ const ZONES_INFO = [
     id: 'pro',
     name: 'PRO (CS2 / DOTA 2)',
     desc: 'Турнірний стандарт. Максимальний FPS та ідеальна точність для змагань.',
-    price: 'від 100 ₴ / god',
+    price: 'від 140 ₴ / год',
     isPopular: true,
     pc: [
       { label: 'GPU', val: 'GeForce RTX 5070 TI SUPER' },
@@ -44,7 +44,7 @@ const ZONES_INFO = [
     id: 'vip',
     name: 'VIP BOOTCAMP',
     desc: 'Ультимативний геймінг. Закрита кімната для команди з найкращим залізом на ринку.',
-    price: 'від 140 ₴ / god',
+    price: 'від 200 ₴ / год',
     pc: [
       { label: 'GPU', val: 'GeForce RTX 5080 TI SUPER' },
       { label: 'CPU', val: 'Intel Core i9-14900K' },
