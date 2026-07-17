@@ -22,7 +22,7 @@ const REVIEWS_DATA = [
 
 export default function Reviews() {
   return (
-    <section id="reviews" style={{ padding: '100px 24px', background: C.surface, borderTop: `1px solid ${C.border}` }}>
+    <section id="reviews" style={{ padding: '100px 24px', background: 'transparent', borderTop: `1px solid ${C.border}` }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
@@ -35,7 +35,8 @@ export default function Reviews() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
           {REVIEWS_DATA.map((rev, index) => (
             <div key={index} style={{
-              background: C.bg, padding: 40, borderRadius: 12, border: `1px solid ${C.border}`,
+              background: 'rgba(9, 9, 11, 0.7)', backdropFilter: 'blur(10px)',
+              padding: 40, borderRadius: 12, border: `1px solid ${C.border}`,
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
               transition: 'all 0.3s ease'
             }}

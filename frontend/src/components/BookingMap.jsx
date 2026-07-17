@@ -32,7 +32,7 @@ export default function BookingMap({ onRequireAuth }) {
   };
 
   return (
-    <section id="booking" style={{ padding: '100px 24px', background: C.bg, position: 'relative' }}>
+    <section id="booking" style={{ padding: '100px 24px', background: 'transparent', position: 'relative' }}>
       
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: `linear-gradient(90deg, transparent, ${C.border}, transparent)` }} />
       <div style={{ position: 'absolute', top: '100px', right: '10%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(250,204,21,0.03) 0%, transparent 70%)', pointerEvents: 'none' }} />
@@ -55,11 +55,11 @@ export default function BookingMap({ onRequireAuth }) {
                   return (
                     <button key={z.id} onClick={() => { setZone(z); setSeat(null); }} style={{
                       padding: '20px 16px', borderRadius: 8, cursor: 'pointer', textAlign: 'left',
-                      background: isSelected ? 'linear-gradient(145deg, rgba(250,204,21,0.1) 0%, rgba(24,24,27,1) 100%)' : C.surface,
+                      background: isSelected ? 'linear-gradient(145deg, rgba(250,204,21,0.15) 0%, rgba(24,24,27,0.8) 100%)' : 'rgba(24, 24, 27, 0.6)',
+                      backdropFilter: 'blur(8px)',
                       border: `1px solid ${isSelected ? C.yellow : C.border}`,
                       boxShadow: isSelected ? '0 4px 20px rgba(250,204,21,0.15)' : 'none',
-                      transition: 'all 0.2s',
-                      display: 'flex', flexDirection: 'column'
+                      transition: 'all 0.2s', display: 'flex', flexDirection: 'column'
                     }}>
                       <div style={{ color: isSelected ? C.yellow : '#fff', fontWeight: 800, fontSize: 18, marginBottom: 12, lineHeight: 1.3 }}>
                         {z.name}
@@ -84,7 +84,7 @@ export default function BookingMap({ onRequireAuth }) {
             <div>
               <div style={{ color: C.muted, marginBottom: 16, fontSize: 13, fontWeight: 700, letterSpacing: 2 }}>2. ТАРИФ ТА ЧАС</div>
               
-              <div style={{ display: 'flex', gap: 8, marginBottom: 24, background: C.surface, padding: 6, borderRadius: 8, border: `1px solid ${C.border}` }}>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 24, background: 'rgba(24, 24, 27, 0.6)', backdropFilter: 'blur(8px)', padding: 6, borderRadius: 8, border: `1px solid ${C.border}` }}>
                 {TARIFFS.map(t => {
                   const isSelected = tariff.id === t.id;
                   return (
@@ -101,7 +101,7 @@ export default function BookingMap({ onRequireAuth }) {
               </div>
 
               {tariff.type === 'hourly' && (
-                <div style={{ background: C.surface, padding: '24px', borderRadius: 8, border: `1px solid ${C.border}` }}>
+                <div style={{ background: 'rgba(24, 24, 27, 0.6)', backdropFilter: 'blur(8px)', padding: '24px', borderRadius: 8, border: `1px solid ${C.border}` }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                     <span style={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>Тривалість сеансу:</span>
                     <span style={{ color: C.yellow, fontWeight: 800, fontSize: 18 }}>{hours} год.</span>
@@ -122,13 +122,13 @@ export default function BookingMap({ onRequireAuth }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
                 <div style={{ color: C.muted, fontSize: 13, fontWeight: 700, letterSpacing: 2 }}>3. ВІЛЬНІ МІСЦЯ</div>
                 <div style={{ display: 'flex', gap: 12, fontSize: 11, color: C.muted }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 10, height: 10, background: C.surface, border: `1px solid ${C.border}` }}/> Вільно</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 10, height: 10, background: 'rgba(24, 24, 27, 0.6)', border: `1px solid ${C.border}` }}/> Вільно</span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 10, height: 10, background: '#1f1f22' }}/> Зайнято</span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 10, height: 10, background: C.yellow }}/> Обрано</span>
                 </div>
               </div>
               
-              <div style={{ background: C.surface, padding: 32, borderRadius: 8, border: `1px solid ${C.border}` }}>
+              <div style={{ background: 'rgba(24, 24, 27, 0.6)', backdropFilter: 'blur(8px)', padding: 32, borderRadius: 8, border: `1px solid ${C.border}` }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(48px, 1fr))', gap: 12 }}>
                   {Array.from({ length: zone.seats }).map((_, i) => {
                     const num = i + 1;
@@ -137,7 +137,7 @@ export default function BookingMap({ onRequireAuth }) {
                     return (
                       <button key={num} disabled={isBooked} onClick={() => setSeat(num)} style={{
                         height: 48, borderRadius: 6, fontWeight: 800, fontSize: 16,
-                        background: isBooked ? '#151518' : isSelected ? C.yellow : C.bg,
+                        background: isBooked ? '#151518' : isSelected ? C.yellow : 'rgba(9, 9, 11, 0.5)',
                         border: `1px solid ${isBooked ? '#1f1f22' : isSelected ? C.yellow : C.border}`,
                         color: isBooked ? '#3f3f46' : isSelected ? '#000' : '#fff',
                         cursor: isBooked ? 'not-allowed' : 'pointer', transition: 'all 0.15s',
@@ -154,7 +154,9 @@ export default function BookingMap({ onRequireAuth }) {
           </div>
 
           <div style={{ 
-            background: 'linear-gradient(180deg, #18181b 0%, #09090b 100%)', 
+            // Панель чеку
+            background: 'linear-gradient(180deg, rgba(24,24,27,0.85) 0%, rgba(9,9,11,0.95) 100%)', 
+            backdropFilter: 'blur(12px)',
             padding: 40, borderRadius: 12, border: `1px solid ${C.yellow}`, 
             position: 'sticky', top: 120,
             boxShadow: '0 10px 40px rgba(250,204,21,0.08), inset 0 0 20px rgba(250,204,21,0.03)'

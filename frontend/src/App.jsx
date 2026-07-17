@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import TournamentsPage from './pages/TournamentsPage';
 import AuthModal from './components/AuthModal';
+import Profile from './pages/Profile';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -29,7 +30,6 @@ export default function App() {
         onLogout={handleLogout}
       />
       
-      {/* МАРШРУТИЗАЦІЯ СТОРІНОК */}
       <Routes>
         <Route path="/" element={
           <Home onRequireAuth={() => {
@@ -41,6 +41,7 @@ export default function App() {
           }} />
         } />
         <Route path="/tournaments" element={<TournamentsPage />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
 
       <AuthModal 

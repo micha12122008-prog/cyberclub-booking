@@ -63,7 +63,7 @@ export default function ZoneDetails() {
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <section id="zones" style={{ padding: '100px 24px', background: C.surface, position: 'relative' }}>
+    <section id="zones" style={{ padding: '100px 24px', background: 'transparent', position: 'relative' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         
         <Reveal direction="down">
@@ -75,12 +75,12 @@ export default function ZoneDetails() {
           </div>
         </Reveal>
 
-        {/* Сітка карток тарифу */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24 }}>
           {ZONES_INFO.map((zone, index) => (
             <Reveal key={zone.id} direction="up" delay={index * 150}>
               <div style={{
-                background: C.bg, borderRadius: 12, padding: 32, border: `1px solid ${zone.isPopular ? C.yellow : C.border}`,
+                background: 'rgba(9, 9, 11, 0.7)', backdropFilter: 'blur(10px)', 
+                borderRadius: 12, padding: 32, border: `1px solid ${zone.isPopular ? C.yellow : C.border}`,
                 position: 'relative', display: 'flex', flexDirection: 'column', height: '100%',
                 boxShadow: zone.isPopular ? '0 10px 30px rgba(250,204,21,0.1)' : 'none',
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease'

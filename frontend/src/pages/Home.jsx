@@ -10,23 +10,18 @@ import Reveal from '../components/Reveal';
 export default function Home({ onRequireAuth }) {
   return (
     <main className="page-animate">
-      {/* Головний екран */}
       <Hero />
       
-      {/* Секція "Про нас" */}
       <Reveal direction="up" delay={100}>
         <Features />
       </Reveal>
       
-      {/* Ігрові зони */}
       <ZoneDetails />
       
-      {/* Панель бронювання з'являється з легким підйомом */}
       <Reveal direction="up" delay={100}>
         <BookingMap onRequireAuth={onRequireAuth} />
       </Reveal>
       
-      {/* Відгуки геймерів */}
       <Reveal direction="up" delay={100}>
         <Reviews />
       </Reveal>

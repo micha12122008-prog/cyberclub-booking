@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 const C = { yellow: '#facc15', muted: '#a1a1aa', surface: '#18181b', bg: '#09090b', border: '#3f3f46' };
 
-export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
+export default function AuthModal({ isOpen, onClose }) {
+  const { login } = useContext(AuthContext);
+
   const [isLoginTab, setIsLoginTab] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,14 +21,16 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
       return;
     }
 
-    const fakeUser = {
-      name: isLoginTab ? email.split('@')[0] : username,
-      email: email,
-      balance: isLoginTab ? 150 : 0
-    };
-
-    onLoginSuccess(fakeUser);
-    onClose();
+    if (isLoginTab) {
+      const savedName = localStorage.getItem('tempMockName') || email.split('@')[0];
+      login("fake_jwt_token_12345", savedName);
+      onClose();
+    } else {
+      localStorage.setItem('tempMockName', username);
+      setIsLoginTab(true);
+      setPassword('');
+      alert('Реєстрація успішна! Тепер увійдіть під своїми даними.');
+    }
   };
 
   return (
@@ -73,7 +78,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
             <div>
               <label style={{ color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: 1, display: 'block', marginBottom: 8 }}>НІКНЕЙМ</label>
               <input type="text" value={username} onChange={e => setUsername(e.target.value)} placeholder="Введіть ваш нікнейм" style={{
-                width: '100%', padding: '14px 16px', background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, color: '#fff', fontSize: 14, outline: 'none', transition: 'border-color 0.2s'
+                width: '100%', padding: '14px 16px', background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, color: '#fff', fontSize: 14, outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box'
               }} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.border} />
             </div>
           )}
@@ -81,14 +86,14 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
           <div>
             <label style={{ color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: 1, display: 'block', marginBottom: 8 }}>EMAIL</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="example@club.com" style={{
-              width: '100%', padding: '14px 16px', background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, color: '#fff', fontSize: 14, outline: 'none', transition: 'border-color 0.2s'
+              width: '100%', padding: '14px 16px', background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, color: '#fff', fontSize: 14, outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box'
             }} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.border} />
           </div>
 
           <div>
             <label style={{ color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: 1, display: 'block', marginBottom: 8 }}>ПАРОЛЬ</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" style={{
-              width: '100%', padding: '14px 16px', background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, color: '#fff', fontSize: 14, outline: 'none', transition: 'border-color 0.2s'
+              width: '100%', padding: '14px 16px', background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, color: '#fff', fontSize: 14, outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box'
             }} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.border} />
           </div>
 

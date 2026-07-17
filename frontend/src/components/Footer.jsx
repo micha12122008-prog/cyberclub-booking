@@ -86,7 +86,7 @@ export default function Footer() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', color: C.muted, fontSize: '14px' }}>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
                 <span style={{ color: '#ec4899', fontSize: '18px' }}>📍</span>
-                <span>вул. Валова, 1<br/>Тернопіль, Україна</span>
+                <span>вул. Корольова, 3<br/>Тернопіль, Україна</span>
               </div>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                 <span style={{ color: '#ec4899', fontSize: '18px' }}>📞</span>
