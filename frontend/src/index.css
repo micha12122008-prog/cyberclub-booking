@@ -103,6 +103,11 @@ body {
   animation-play-state: paused; 
 }
 
+.custom-leaflet-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
 @keyframes scrollTicker {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }

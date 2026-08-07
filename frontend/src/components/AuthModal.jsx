@@ -1,36 +1,118 @@
-import React, { useState, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import React, { useState } from 'react';
 
 const C = { yellow: '#facc15', muted: '#a1a1aa', surface: '#18181b', bg: '#09090b', border: '#3f3f46' };
 
-export default function AuthModal({ isOpen, onClose }) {
-  const { login } = useContext(AuthContext);
+// Виправлений шлях відповідно до бекенд-контролера Данила [Route("api/")]
+const API_BASE_URL = 'https://localhost:7262/api';
 
+export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [isLoginTab, setIsLoginTab] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // Стан для відображення пароля
+
+  // Поля форм
+  const [loginInput, setLoginInput] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!email || !password || (!isLoginTab && !username)) {
-      alert("Будь ласка, заповніть всі поля!");
-      return;
+    setError('');
+
+    // Базові перевірки
+    if (isLoginTab) {
+      if (!loginInput || !password) {
+        setError("Будь ласка, заповніть всі поля!");
+        return;
+      }
+    } else {
+      if (!username || !email || !password || !confirmPassword) {
+        setError("Будь ласка, заповніть всі поля!");
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError("Паролі не співпадають!");
+        return;
+      }
     }
 
-    if (isLoginTab) {
-      const savedName = localStorage.getItem('tempMockName') || email.split('@')[0];
-      login("fake_jwt_token_12345", savedName);
-      onClose();
-    } else {
-      localStorage.setItem('tempMockName', username);
-      setIsLoginTab(true);
-      setPassword('');
-      alert('Реєстрація успішна! Тепер увійдіть під своїми даними.');
+    setLoading(true);
+
+    try {
+      if (isLoginTab) {
+        // Запит на вхід
+        const response = await fetch(`${API_BASE_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            login: loginInput,
+            password: password
+          }),
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json(); 
+          
+          onLoginSuccess({ 
+            name: loginInput, 
+            token: data.accessToken 
+          });
+          
+          setLoading(false);
+          onClose();
+        } else {
+          const errData = await response.json().catch(() => ({}));
+          setError(errData.message || 'Невірний логін або пароль.');
+          setLoading(false);
+        }
+
+      } else {
+        // Запит на реєстрацію
+        const response = await fetch(`${API_BASE_URL}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userName: username,
+            email: email,
+            password: password,
+            confirmPassword: confirmPassword
+          }),
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          alert('Реєстрація успішна! Тепер увійдіть під своїми даними.');
+          setIsLoginTab(true);
+          setPassword('');
+          setConfirmPassword('');
+        } else {
+          const errData = await response.json().catch(() => ({}));
+          setError(errData.message || 'Помилка реєстрації. Спробуйте інший логін/email.');
+        }
+        setLoading(false);
+      }
+
+    } catch (err) {
+      console.error('Помилка мережі:', err);
+      // Якщо бекенд ще не запущений, виводимо зрозумілу помилку
+      if (err.message === 'Failed to fetch') {
+        setError('Сервер недоступний. Можливо, бекенд зараз вимкнений.');
+      } else {
+        setError('Не вдалося зʼєднатися з сервером.');
+      }
+      setLoading(false);
     }
+  };
+
+  const inputStyle = {
+    width: '100%', padding: '14px 16px', background: C.bg, border: `1px solid ${C.border}`, 
+    borderRadius: 6, color: '#fff', fontSize: 14, outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box'
   };
 
   return (
@@ -53,8 +135,14 @@ export default function AuthModal({ isOpen, onClose }) {
           ✕
         </button>
 
+        {error && (
+          <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#ef4444', padding: '10px 12px', borderRadius: 6, marginBottom: 20, fontSize: 13, textAlign: 'center' }}>
+            {error}
+          </div>
+        )}
+
         <div style={{ display: 'flex', gap: 24, marginBottom: 32, borderBottom: `1px solid ${C.border}`, paddingBottom: 12 }}>
-          <button onClick={() => setIsLoginTab(true)} style={{
+          <button type="button" onClick={() => { setIsLoginTab(true); setError(''); }} style={{
             background: 'none', border: 'none', color: isLoginTab ? C.yellow : C.muted,
             fontSize: 20, fontWeight: 800, cursor: 'pointer', letterSpacing: 1, transition: 'all 0.2s',
             position: 'relative', padding: '0 4px'
@@ -62,7 +150,7 @@ export default function AuthModal({ isOpen, onClose }) {
             ВХІД
             {isLoginTab && <span style={{ position: 'absolute', bottom: -14, left: 0, right: 0, height: 2, background: C.yellow }} />}
           </button>
-          <button onClick={() => setIsLoginTab(false)} style={{
+          <button type="button" onClick={() => { setIsLoginTab(false); setError(''); }} style={{
             background: 'none', border: 'none', color: !isLoginTab ? C.yellow : C.muted,
             fontSize: 20, fontWeight: 800, cursor: 'pointer', letterSpacing: 1, transition: 'all 0.2s',
             position: 'relative', padding: '0 4px'
@@ -75,33 +163,56 @@ export default function AuthModal({ isOpen, onClose }) {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           
           {!isLoginTab && (
+            <>
+              <div>
+                <label style={{ color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: 1, display: 'block', marginBottom: 8 }}>НІКНЕЙМ (USERNAME)</label>
+                <input type="text" value={username} onChange={e => setUsername(e.target.value)} placeholder="Введіть ваш нікнейм" style={inputStyle} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.border} />
+              </div>
+
+              <div>
+                <label style={{ color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: 1, display: 'block', marginBottom: 8 }}>EMAIL</label>
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="example@club.com" style={inputStyle} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.border} />
+              </div>
+            </>
+          )}
+
+          {isLoginTab && (
             <div>
-              <label style={{ color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: 1, display: 'block', marginBottom: 8 }}>НІКНЕЙМ</label>
-              <input type="text" value={username} onChange={e => setUsername(e.target.value)} placeholder="Введіть ваш нікнейм" style={{
-                width: '100%', padding: '14px 16px', background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, color: '#fff', fontSize: 14, outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box'
-              }} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.border} />
+              <label style={{ color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: 1, display: 'block', marginBottom: 8 }}>ЛОГІН АБО EMAIL</label>
+              <input type="text" value={loginInput} onChange={e => setLoginInput(e.target.value)} placeholder="Ваш логін" style={inputStyle} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.border} />
             </div>
           )}
 
-          <div>
-            <label style={{ color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: 1, display: 'block', marginBottom: 8 }}>EMAIL</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="example@club.com" style={{
-              width: '100%', padding: '14px 16px', background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, color: '#fff', fontSize: 14, outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box'
-            }} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.border} />
-          </div>
-
-          <div>
+          <div style={{ position: 'relative' }}>
             <label style={{ color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: 1, display: 'block', marginBottom: 8 }}>ПАРОЛЬ</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" style={{
-              width: '100%', padding: '14px 16px', background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, color: '#fff', fontSize: 14, outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box'
-            }} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.border} />
+            <input type={showPassword ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" style={{ ...inputStyle, paddingRight: '90px' }} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.border} />
+            <button 
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ 
+                position: 'absolute', right: 12, top: 35, 
+                background: 'none', border: 'none', color: C.yellow, 
+                cursor: 'pointer', fontSize: 11, fontWeight: 700, letterSpacing: 1,
+                padding: '4px'
+              }}
+            >
+              {showPassword ? "СХОВАТИ" : "ПОКАЗАТИ"}
+            </button>
           </div>
 
-          <button type="submit" style={{
+          {!isLoginTab && (
+            <div style={{ position: 'relative' }}>
+              <label style={{ color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: 1, display: 'block', marginBottom: 8 }}>ПІДТВЕРДИТИ ПАРОЛЬ</label>
+              <input type={showPassword ? "text" : "password"} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="••••••••" style={{ ...inputStyle, paddingRight: '90px' }} onFocus={e => e.target.style.borderColor = C.yellow} onBlur={e => e.target.style.borderColor = C.border} />
+            </div>
+          )}
+
+          <button type="submit" disabled={loading} style={{
             width: '100%', padding: '16px', background: C.yellow, color: '#000', border: 'none', borderRadius: 6,
-            fontSize: 15, fontWeight: 800, cursor: 'pointer', letterSpacing: 2, marginTop: 12, transition: 'all 0.2s'
-          }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-            {isLoginTab ? 'УВІЙТИ В АКАУНТ' : 'СТВОРИТИ ПРОФІЛЬ'}
+            fontSize: 15, fontWeight: 800, cursor: loading ? 'not-allowed' : 'pointer', letterSpacing: 2, marginTop: 12, transition: 'all 0.2s',
+            opacity: loading ? 0.7 : 1
+          }} onMouseEnter={e => !loading && (e.currentTarget.style.transform = 'translateY(-2px)')} onMouseLeave={e => !loading && (e.currentTarget.style.transform = 'translateY(0)')}>
+            {loading ? 'ЗАВАНТАЖЕННЯ...' : (isLoginTab ? 'УВІЙТИ В АКАУНТ' : 'СТВОРИТИ ПРОФІЛЬ')}
           </button>
 
         </form>
