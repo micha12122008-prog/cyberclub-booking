@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 const C = { yellow: '#facc15', muted: '#a1a1aa', surface: '#18181b', bg: '#09090b', border: '#3f3f46' };
 
-// Виправлений шлях відповідно до бекенд-контролера Данила [Route("api/")]
 const API_BASE_URL = 'https://localhost:7262/api';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
