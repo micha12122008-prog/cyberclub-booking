@@ -1,7 +1,8 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import Reveal from '../components/Reveal'; // Додаємо анімації
+import Reveal from '../components/Reveal';
+import { bookingsApi } from '../services/api';
 
 const C = { yellow: '#facc15', muted: '#a1a1aa', border: '#3f3f46', bg: '#09090b', surface: '#121214', surfaceLight: '#18181b' };
 
@@ -11,6 +12,27 @@ export default function Profile() {
   
   const fileInputRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
+  
+  // Стейт для реальних бронювань
+  const [bookings, setBookings] = useState([]);
+  const [isLoadingBookings, setIsLoadingBookings] = useState(true);
+
+  // Завантажуємо бронювання при відкритті сторінки
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchMyBookings = async () => {
+        try {
+          const data = await bookingsApi.getMy();
+          setBookings(data);
+        } catch (error) {
+          console.error("Не вдалося завантажити бронювання", error);
+        } finally {
+          setIsLoadingBookings(false);
+        }
+      };
+      fetchMyBookings();
+    }
+  }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     navigate('/');
@@ -28,11 +50,15 @@ export default function Profile() {
     }
   };
 
-  const dummyBookings = [
-    { id: 1, pc: 'PC-12 (VIP)', date: 'Сьогодні, 18:00 - 21:00', price: '300 ₴', status: 'Активне' },
-    { id: 2, pc: 'PC-05 (Standart)', date: 'Вчора, 14:00 - 16:00', price: '150 ₴', status: 'Завершено' },
-    { id: 3, pc: 'PS5 Zone', date: '10 Лип, 20:00 - 23:00', price: '450 ₴', status: 'Завершено' },
-  ];
+  // Допоміжна функція для статусу
+  const getStatusInfo = (status) => {
+    switch(status) {
+      case 0: return { text: 'Активне', color: C.yellow, bg: 'rgba(250, 204, 21, 0.15)', border: 'rgba(250, 204, 21, 0.3)' };
+      case 1: return { text: 'Завершено', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.3)' }; // Зелений
+      case 2: return { text: 'Скасовано', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.3)' }; // Червоний
+      default: return { text: 'Невідомо', color: C.muted, bg: 'rgba(255, 255, 255, 0.05)', border: 'rgba(255, 255, 255, 0.1)' };
+    }
+  };
 
   const glassCardStyle = {
     background: 'rgba(9, 9, 11, 0.7)',
@@ -52,12 +78,10 @@ export default function Profile() {
         
         {/*Ліва колонка*/}
         <div style={{ flex: '1 1 350px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          
           <Reveal direction="left" delay={100}>
             <div style={{ ...glassCardStyle, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ position: 'absolute', top: '-50px', left: '50%', transform: 'translateX(-50%)', width: '200px', height: '100px', background: C.yellow, filter: 'blur(80px)', opacity: 0.1 }}></div>
 
-              {/*Аватарка*/}
               <div 
                 onClick={() => fileInputRef.current.click()}
                 onMouseEnter={() => setIsHovered(true)}
@@ -108,7 +132,6 @@ export default function Profile() {
             </div>
           </Reveal>
 
-          {/*Баланс*/}
           <Reveal direction="up" delay={200}>
             <div style={{ ...glassCardStyle, border: `1px solid rgba(250, 204, 21, 0.3)` }}>
               <div style={{ position: 'absolute', bottom: '-40px', right: '-40px', width: '150px', height: '150px', background: C.yellow, filter: 'blur(60px)', opacity: 0.15, borderRadius: '50%' }}></div>
@@ -127,7 +150,7 @@ export default function Profile() {
           </Reveal>
         </div>
 
-        {/*Права колонка*/}
+        {/*Права колонка (Реальні бронювання)*/}
         <div style={{ flex: '2 1 600px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <Reveal direction="right" delay={300}>
             <div style={glassCardStyle}>
@@ -137,42 +160,60 @@ export default function Profile() {
               </h3>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {dummyBookings.map((booking, index) => (
-                  <Reveal key={booking.id} direction="up" delay={400 + (index * 100)}>
-                    <div 
-                      style={{ 
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px', 
-                        background: 'rgba(255, 255, 255, 0.02)', border: `1px solid rgba(255, 255, 255, 0.05)`, 
-                        borderRadius: '12px', transition: 'all 0.3s ease', cursor: 'default'
-                      }} 
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.transform = 'translateX(8px)'; e.currentTarget.style.borderColor = 'rgba(250, 204, 21, 0.2)'; }} 
-                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'; e.currentTarget.style.transform = 'translateX(0)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)'; }}
-                    >
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <span style={{ fontSize: '20px', fontWeight: 900, color: '#fff', letterSpacing: '1px' }}>{booking.pc}</span>
-                        <span style={{ fontSize: '14px', fontWeight: 600, color: C.muted, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ fontSize: '16px' }}>🕒</span> {booking.date}
-                        </span>
-                      </div>
-                      
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
-                        <span style={{ fontSize: '22px', fontWeight: 900, color: C.yellow, textShadow: '0 0 10px rgba(250,204,21,0.2)' }}>{booking.price}</span>
-                        <span style={{ 
-                          fontSize: '12px', fontWeight: 800, padding: '4px 12px', borderRadius: '6px', letterSpacing: '1px', textTransform: 'uppercase',
-                          background: booking.status === 'Активне' ? 'rgba(250, 204, 21, 0.15)' : 'rgba(255, 255, 255, 0.05)', 
-                          color: booking.status === 'Активне' ? C.yellow : C.muted,
-                          border: booking.status === 'Активне' ? `1px solid rgba(250, 204, 21, 0.3)` : `1px solid rgba(255, 255, 255, 0.1)`
-                        }}>
-                          {booking.status}
-                        </span>
-                      </div>
-                    </div>
-                  </Reveal>
-                ))}
+                {isLoadingBookings ? (
+                  <p style={{ color: C.muted, textAlign: 'center', padding: '20px' }}>Завантаження історії...</p>
+                ) : bookings.length > 0 ? (
+                  bookings.map((booking, index) => {
+                    const statusInfo = getStatusInfo(booking.status);
+                    const startDate = new Date(booking.startTime);
+                    const endDate = new Date(booking.endTime);
+                    const dateString = `${startDate.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' })}, ${startDate.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })}`;
+
+                    return (
+                      <Reveal key={booking.id} direction="up" delay={400 + (index * 100)}>
+                        <div 
+                          style={{ 
+                            display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px', flexWrap: 'wrap', gap: '16px',
+                            background: 'rgba(255, 255, 255, 0.02)', border: `1px solid rgba(255, 255, 255, 0.05)`, 
+                            borderRadius: '12px', transition: 'all 0.3s ease', cursor: 'default'
+                          }} 
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.transform = 'translateX(8px)'; e.currentTarget.style.borderColor = 'rgba(250, 204, 21, 0.2)'; }} 
+                          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'; e.currentTarget.style.transform = 'translateX(0)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)'; }}
+                        >
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <span style={{ fontSize: '20px', fontWeight: 900, color: '#fff', letterSpacing: '1px' }}>
+                              Комп'ютер #{booking.computerId}
+                            </span>
+                            <span style={{ fontSize: '14px', fontWeight: 600, color: C.muted, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <span style={{ fontSize: '16px' }}>🕒</span> {dateString}
+                            </span>
+                          </div>
+                          
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
+                            <span style={{ fontSize: '22px', fontWeight: 900, color: C.yellow, textShadow: '0 0 10px rgba(250,204,21,0.2)' }}>
+                              {booking.totalPrice} ₴
+                            </span>
+                            <span style={{ 
+                              fontSize: '12px', fontWeight: 800, padding: '4px 12px', borderRadius: '6px', letterSpacing: '1px', textTransform: 'uppercase',
+                              background: statusInfo.bg, color: statusInfo.color, border: `1px solid ${statusInfo.border}`
+                            }}>
+                              {statusInfo.text}
+                            </span>
+                          </div>
+                        </div>
+                      </Reveal>
+                    );
+                  })
+                ) : (
+                  <p style={{ color: C.muted, textAlign: 'center', padding: '20px', fontSize: '16px' }}>
+                    Ви ще не зробили жодного бронювання. Час це виправити!
+                  </p>
+                )}
               </div>
               
               <Reveal direction="up" delay={700}>
                 <button 
+                  onClick={() => { navigate('/'); setTimeout(() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' }), 100); }}
                   style={{ marginTop: '32px', width: '100%', padding: '18px', background: 'rgba(250, 204, 21, 0.05)', color: C.yellow, border: `1px dashed rgba(250, 204, 21, 0.4)`, borderRadius: '12px', fontSize: '16px', fontWeight: 900, cursor: 'pointer', letterSpacing: '2px', transition: 'all 0.2s' }} 
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(250, 204, 21, 0.1)'; e.currentTarget.style.borderStyle = 'solid'; e.currentTarget.style.transform = 'scale(1.02)'; }} 
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(250, 204, 21, 0.05)'; e.currentTarget.style.borderStyle = 'dashed'; e.currentTarget.style.transform = 'scale(1)'; }}

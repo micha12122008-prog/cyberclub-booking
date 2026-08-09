@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { bookingsApi } from '../services/api';
 
 const C = { yellow: '#facc15', muted: '#a1a1aa', surface: '#18181b', bg: '#09090b', border: '#3f3f46' };
 
@@ -15,6 +17,9 @@ const TARIFFS = [
 ];
 
 export default function BookingMap({ onRequireAuth }) {
+  const { isAuthenticated } = useContext(AuthContext);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [zone, setZone] = useState(ZONES[1]);
   const [tariff, setTariff] = useState(TARIFFS[1]);
   const [hours, setHours] = useState(2);
@@ -26,9 +31,47 @@ export default function BookingMap({ onRequireAuth }) {
     return Math.round(zone.price * tariff.mult * hours) || 0;
   };
 
-  const handleBook = () => {
+  const handleBook = async () => {
     if (!seat) return alert("Будь ласка, оберіть ігрове місце (Крок 3)");
-    onRequireAuth();
+    
+    if (!isAuthenticated) {
+      onRequireAuth();
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      let startTime = new Date();
+      let endTime = new Date();
+
+      if (tariff.id === 'standard') {
+        endTime.setHours(startTime.getHours() + Number(hours));
+      } else if (tariff.id === 'morning') {
+        startTime.setHours(8, 0, 0, 0);
+        if (startTime < new Date()) startTime.setDate(startTime.getDate() + 1);
+        endTime = new Date(startTime);
+        endTime.setHours(14, 0, 0, 0);
+      } else if (tariff.id === 'night') {
+        startTime.setHours(22, 0, 0, 0);
+        if (startTime < new Date()) startTime.setDate(startTime.getDate() + 1);
+        endTime = new Date(startTime);
+        endTime.setDate(endTime.getDate() + 1);
+        endTime.setHours(8, 0, 0, 0);
+      }
+
+      // Тимчасово передаємо вибране місце як ID комп'ютера на бекенд
+      const computerId = seat; 
+      await bookingsApi.create(computerId, startTime, endTime);
+      
+      alert("🎉 Успішно заброньовано! Деталі можна переглянути в профілі.");
+      setSeat(null);
+
+    } catch (error) {
+      alert(`Помилка: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -153,8 +196,8 @@ export default function BookingMap({ onRequireAuth }) {
 
           </div>
 
+          {/* Панель чеку */}
           <div style={{ 
-            // Панель чеку
             background: 'linear-gradient(180deg, rgba(24,24,27,0.85) 0%, rgba(9,9,11,0.95) 100%)', 
             backdropFilter: 'blur(12px)',
             padding: 40, borderRadius: 12, border: `1px solid ${C.yellow}`, 
@@ -211,15 +254,15 @@ export default function BookingMap({ onRequireAuth }) {
               <span style={{ fontSize: 42, fontWeight: 800, color: C.yellow, lineHeight: 1 }}>{calculateTotal()} ₴</span>
             </div>
 
-            <button onClick={handleBook} style={{ 
+            <button disabled={isSubmitting} onClick={handleBook} style={{ 
               width: '100%', padding: '20px', background: C.yellow, color: '#000', border: 'none', 
-              borderRadius: 8, fontSize: 18, fontWeight: 800, cursor: 'pointer', letterSpacing: 2,
-              transition: 'all 0.2s', boxShadow: '0 4px 15px rgba(250,204,21,0.2)'
+              borderRadius: 8, fontSize: 18, fontWeight: 800, cursor: isSubmitting ? 'not-allowed' : 'pointer', letterSpacing: 2,
+              transition: 'all 0.2s', boxShadow: '0 4px 15px rgba(250,204,21,0.2)', opacity: isSubmitting ? 0.7 : 1
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 25px rgba(250,204,21,0.4)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(250,204,21,0.2)' }}
+            onMouseEnter={e => { if(!isSubmitting) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 25px rgba(250,204,21,0.4)' } }}
+            onMouseLeave={e => { if(!isSubmitting) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(250,204,21,0.2)' } }}
             >
-              ПІДТВЕРДИТИ
+              {isSubmitting ? 'ОБРОБКА...' : 'ПІДТВЕРДИТИ'}
             </button>
           </div>
 
