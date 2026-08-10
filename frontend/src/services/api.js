@@ -1,5 +1,6 @@
-// Базова URL
-const API_BASE_URL = 'https://localhost:7262/api';
+// Базова URL. Дані віддає той самий MainService (same-origin /api).
+// Локально можна перевизначити через VITE_API_BASE (напр. https://localhost:7262/api).
+const API_BASE_URL = import.meta.env.VITE_API_BASE ?? '/api';
 
 const getHeaders = (requireAuth = false) => {
   const headers = {

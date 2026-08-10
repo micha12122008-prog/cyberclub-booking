@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 const C = { yellow: '#facc15', muted: '#a1a1aa', surface: '#18181b', bg: '#09090b', border: '#3f3f46' };
 
-const API_BASE_URL = 'https://localhost:7262/api';
+// Авторизацію (login/register) видає AuthService — задай його URL через VITE_AUTH_BASE,
+// напр. https://auth-production.up.railway.app/api. Дефолт /api — той самий домен.
+const API_BASE_URL = import.meta.env.VITE_AUTH_BASE || '/api';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
+  const { login } = useContext(AuthContext);
   const [isLoginTab, setIsLoginTab] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,7 +26,6 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
     // Базові перевірки
     if (isLoginTab) {
       if (!loginInput || !password) {
@@ -41,7 +44,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     }
 
     setLoading(true);
-
+   
     try {
       if (isLoginTab) {
         // Запит на вхід
@@ -56,13 +59,13 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
         });
 
         if (response.ok) {
-          const data = await response.json(); 
-          
-          onLoginSuccess({ 
-            name: loginInput, 
-            token: data.accessToken 
-          });
-          
+          const data = await response.json();
+
+          // Оновлюємо ГЛОБАЛЬНИЙ стан: зберігаємо токен + isAuthenticated=true.
+          // Без цього Navbar/BookingMap (які читають AuthContext) лишались у стані "гість".
+          login(data.accessToken, loginInput);
+          onLoginSuccess?.({ name: loginInput, token: data.accessToken });
+
           setLoading(false);
           onClose();
         } else {
