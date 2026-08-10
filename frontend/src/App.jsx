@@ -1,57 +1,45 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-export const AuthContext = createContext();
+// Контекст авторизації
+import { AuthProvider } from './context/AuthContext';
 
-export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
-  const [userName, setUserName] = useState(localStorage.getItem('userName') || null);
-  
-  // Стан для збереження аватарки
-  const [avatar, setAvatar] = useState(null);
+// Компоненти
+import Navbar from './components/Navbar';
 
-  // Секрет збереження: коли змінюється юзер (хтось зайшов), підтягуємо його особисту аватарку
-  useEffect(() => {
-    if (userName) {
-      setAvatar(localStorage.getItem(`userAvatar_${userName}`) || null);
-    } else {
-      setAvatar(null);
-    }
-  }, [userName]);
-  
-  const [isAuthenticated, setIsAuthenticated] = useState(!!token);
+// Сторінки
+import Home from './pages/Home';
+import Profile from './pages/Profile';
+import TournamentsPage from './pages/TournamentsPage';
+import AdminDashboard from './pages/AdminDashboard';
 
-  const login = (newToken, name = "Гравець") => {
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('userName', name);
-    setToken(newToken);
-    setUserName(name);
-    setIsAuthenticated(true);
-  };
-
-  // Функція для оновлення аватарки
-  const updateAvatar = (newAvatarUrl) => {
-    if (userName) {
-      // Зберігаємо аватарку з прив'язкою до конкретного нікнейму (наприклад: userAvatar_Misha)
-      localStorage.setItem(`userAvatar_${userName}`, newAvatarUrl);
-      setAvatar(newAvatarUrl);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userName');
-    
-    // ⚠️ ВИДАЛЕНО: localStorage.removeItem('userAvatar'); 
-    // Тепер аватарка залишається в пам'яті браузера і чекає, поки цей юзер зайде знову!
-
-    setToken(null);
-    setUserName(null);
-    setIsAuthenticated(false);
-  };
-
+// ГОЛОВНИЙ ЕКСПОРТ (саме через його відсутність падав Vite)
+export default function App() {
   return (
-    <AuthContext.Provider value={{ token, isAuthenticated, userName, avatar, login, logout, updateAvatar }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        
+        {/* Контейнер для всіх сторінок */}
+        <div className="main-content">
+          <Routes>
+            {/* Головна сторінка. Передаємо просту функцію для вимоги логіну */}
+            <Route 
+              path="/" 
+              element={
+                <Home onRequireAuth={() => alert('Будь ласка, увійдіть в акаунт (кнопка в правому верхньому куті)!')} />
+              } 
+            />
+            
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/tournaments" element={<TournamentsPage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            
+            {/* Якщо користувач введе неіснуючий шлях, повертаємо його на головну */}
+            <Route path="*" element={<Home />} />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
   );
-};
+}
